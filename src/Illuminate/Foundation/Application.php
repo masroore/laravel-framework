@@ -29,7 +29,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      *
      * @var string
      */
-    const VERSION = '5.6.15';
+    const VERSION = '5.6.16';
 
     /**
      * The base path for the Laravel installation.
@@ -505,7 +505,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      */
     public function detectEnvironment(Closure $callback)
     {
-        $args = $_SERVER['argv'];
+        $args = array_get($_SERVER, 'argv');
 
         return $this['env'] = (new EnvironmentDetector)->detect($callback, $args);
     }
@@ -608,7 +608,8 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
      */
     public function getProvider($provider)
     {
-        return array_values($this->getProviders($provider))[0];
+        $obj = array_values($this->getProviders($provider));
+        return isset($obj[0]) ? $obj[0] : null;
     }
 
     /**

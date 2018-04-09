@@ -626,7 +626,7 @@ class Route
      */
     public function getName()
     {
-        return $this->action['as'];
+        return array_get($this->action, 'as');
     }
 
     /**

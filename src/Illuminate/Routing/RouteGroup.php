@@ -45,7 +45,7 @@ class RouteGroup
                     : trim($new['namespace'], '\\');
         }
 
-        return $old['namespace'];
+        return array_get($old, 'namespace');
     }
 
     /**
@@ -57,7 +57,7 @@ class RouteGroup
      */
     protected static function formatPrefix($new, $old)
     {
-        $old = $old['prefix'];
+        $old = array_get($old, 'prefix');
 
         return isset($new['prefix']) ? trim($old, '/').'/'.trim($new['prefix'], '/') : $old;
     }
@@ -72,8 +72,8 @@ class RouteGroup
     protected static function formatWhere($new, $old)
     {
         return array_merge(
-            isset($old['where']) ? $old['where'] : [],
-            isset($new['where']) ? $new['where'] : []
+            array_get($old, 'where', []),
+            array_get($new, 'where', [])
         );
     }
 
@@ -87,7 +87,7 @@ class RouteGroup
     protected static function formatAs($new, $old)
     {
         if (isset($old['as'])) {
-            $new['as'] = $old['as'] . Arr::get($new, 'as', '');
+            $new['as'] = $old['as'].($new['as'] ?? '');
         }
 
         return $new;
