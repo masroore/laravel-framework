@@ -37,8 +37,8 @@ trait DatabaseRule
     /**
      * Create a new rule instance.
      *
-     * @param  string  $table
-     * @param  string  $column
+     * @param  string $table
+     * @param  string $column
      * @return void
      */
     public function __construct($table, $column = 'NULL')
@@ -50,8 +50,8 @@ trait DatabaseRule
     /**
      * Set a "where" constraint on the query.
      *
-     * @param  string|\Closure  $column
-     * @param  array|string|null  $value
+     * @param  string|\Closure $column
+     * @param  array|string|null $value
      * @return $this
      */
     public function where($column, $value = null)
@@ -70,48 +70,10 @@ trait DatabaseRule
     }
 
     /**
-     * Set a "where not" constraint on the query.
-     *
-     * @param  string  $column
-     * @param  array|string  $value
-     * @return $this
-     */
-    public function whereNot($column, $value)
-    {
-        if (is_array($value)) {
-            return $this->whereNotIn($column, $value);
-        }
-
-        return $this->where($column, '!'.$value);
-    }
-
-    /**
-     * Set a "where null" constraint on the query.
-     *
-     * @param  string  $column
-     * @return $this
-     */
-    public function whereNull($column)
-    {
-        return $this->where($column, 'NULL');
-    }
-
-    /**
-     * Set a "where not null" constraint on the query.
-     *
-     * @param  string  $column
-     * @return $this
-     */
-    public function whereNotNull($column)
-    {
-        return $this->where($column, 'NOT_NULL');
-    }
-
-    /**
      * Set a "where in" constraint on the query.
      *
-     * @param  string  $column
-     * @param  array  $values
+     * @param  string $column
+     * @param  array $values
      * @return $this
      */
     public function whereIn($column, array $values)
@@ -122,10 +84,26 @@ trait DatabaseRule
     }
 
     /**
+     * Set a "where not" constraint on the query.
+     *
+     * @param  string $column
+     * @param  array|string $value
+     * @return $this
+     */
+    public function whereNot($column, $value)
+    {
+        if (is_array($value)) {
+            return $this->whereNotIn($column, $value);
+        }
+
+        return $this->where($column, '!' . $value);
+    }
+
+    /**
      * Set a "where not in" constraint on the query.
      *
-     * @param  string  $column
-     * @param  array  $values
+     * @param  string $column
+     * @param  array $values
      * @return $this
      */
     public function whereNotIn($column, array $values)
@@ -136,9 +114,31 @@ trait DatabaseRule
     }
 
     /**
+     * Set a "where null" constraint on the query.
+     *
+     * @param  string $column
+     * @return $this
+     */
+    public function whereNull($column)
+    {
+        return $this->where($column, 'NULL');
+    }
+
+    /**
+     * Set a "where not null" constraint on the query.
+     *
+     * @param  string $column
+     * @return $this
+     */
+    public function whereNotNull($column)
+    {
+        return $this->where($column, 'NOT_NULL');
+    }
+
+    /**
      * Register a custom query callback.
      *
-     * @param  \Closure  $callback
+     * @param  \Closure $callback
      * @return $this
      */
     public function using(Closure $callback)
@@ -166,7 +166,7 @@ trait DatabaseRule
     protected function formatWheres()
     {
         return collect($this->wheres)->map(function ($where) {
-            return $where['column'].','.$where['value'];
+            return $where['column'] . ',' . $where['value'];
         })->implode(',');
     }
 }

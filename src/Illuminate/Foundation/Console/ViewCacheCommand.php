@@ -38,9 +38,23 @@ class ViewCacheCommand extends Command
     }
 
     /**
+     * Get all of the possible view paths.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function paths()
+    {
+        $finder = $this->laravel['view']->getFinder();
+
+        return collect($finder->getPaths())->merge(
+            collect($finder->getHints())->flatten()
+        );
+    }
+
+    /**
      * Compile the given view files.
      *
-     * @param  \Illuminate\Support\Collection  $views
+     * @param  \Illuminate\Support\Collection $views
      * @return void
      */
     protected function compileViews(Collection $views)
@@ -55,28 +69,17 @@ class ViewCacheCommand extends Command
     /**
      * Get the Blade files in the given path.
      *
-     * @param  array  $paths
+     * @param  array $paths
      * @return \Illuminate\Support\Collection
      */
     protected function bladeFilesIn(array $paths)
     {
-        return collect(Finder::create()->
-                    in($paths)
-                    ->exclude('vendor')
-                    ->name('*.blade.php')->files());
-    }
-
-    /**
-     * Get all of the possible view paths.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function paths()
-    {
-        $finder = $this->laravel['view']->getFinder();
-
-        return collect($finder->getPaths())->merge(
-            collect($finder->getHints())->flatten()
+        return collect(
+            Finder::create()
+                ->in($paths)
+                ->exclude('vendor')
+                ->name('*.blade.php')
+                ->files()
         );
     }
 }

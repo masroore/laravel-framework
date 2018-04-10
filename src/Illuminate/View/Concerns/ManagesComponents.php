@@ -37,8 +37,8 @@ trait ManagesComponents
     /**
      * Start a component rendering process.
      *
-     * @param  string  $name
-     * @param  array  $data
+     * @param  string $name
+     * @param  array $data
      * @return void
      */
     public function startComponent($name, array $data = [])
@@ -65,25 +65,10 @@ trait ManagesComponents
     }
 
     /**
-     * Get the data for the given component.
-     *
-     * @param  string  $name
-     * @return array
-     */
-    protected function componentData($name)
-    {
-        return array_merge(
-            $this->componentData[count($this->componentStack)],
-            ['slot' => new HtmlString(trim(ob_get_clean()))],
-            $this->slots[count($this->componentStack)]
-        );
-    }
-
-    /**
      * Start the slot rendering process.
      *
-     * @param  string  $name
-     * @param  string|null  $content
+     * @param  string $name
+     * @param  string|null $content
      * @return void
      */
     public function slot($name, $content = null)
@@ -113,7 +98,22 @@ trait ManagesComponents
         );
 
         $this->slots[$this->currentComponent()]
-                    [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+        [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+    }
+
+    /**
+     * Get the data for the given component.
+     *
+     * @param  string $name
+     * @return array
+     */
+    protected function componentData($name)
+    {
+        return array_merge(
+            $this->componentData[count($this->componentStack)],
+            ['slot' => new HtmlString(trim(ob_get_clean()))],
+            $this->slots[count($this->componentStack)]
+        );
     }
 
     /**

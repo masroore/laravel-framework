@@ -9,7 +9,7 @@ class PaginatedResourceResponse extends ResourceResponse
     /**
      * Create an HTTP response that represents the object.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function toResponse($request)
@@ -34,7 +34,7 @@ class PaginatedResourceResponse extends ResourceResponse
     /**
      * Add the pagination information to the response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return array
      */
     protected function paginationInformation($request)
@@ -50,23 +50,23 @@ class PaginatedResourceResponse extends ResourceResponse
     /**
      * Get the pagination links for the response.
      *
-     * @param  array  $paginated
+     * @param  array $paginated
      * @return array
      */
     protected function paginationLinks($paginated)
     {
         return [
-            'first' => $paginated['first_page_url'],
-            'last' => $paginated['last_page_url'],
-            'prev' => $paginated['prev_page_url'],
-            'next' => $paginated['next_page_url'],
+            'first' => array_if($paginated, 'first_page_url'),
+            'last' => array_if($paginated, 'last_page_url'),
+            'prev' => array_if($paginated, 'prev_page_url'),
+            'next' => array_if($paginated, 'next_page_url'),
         ];
     }
 
     /**
      * Gather the meta data for the response.
      *
-     * @param  array  $paginated
+     * @param  array $paginated
      * @return array
      */
     protected function meta($paginated)

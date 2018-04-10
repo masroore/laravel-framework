@@ -2,12 +2,12 @@
 
 namespace Illuminate\Notifications\Channels;
 
+use Illuminate\Contracts\Mail\Mailable;
+use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Mail\Markdown;
+use Illuminate\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Mail\Markdown;
-use Illuminate\Contracts\Mail\Mailer;
-use Illuminate\Contracts\Mail\Mailable;
-use Illuminate\Notifications\Notification;
 
 class MailChannel
 {
@@ -28,8 +28,8 @@ class MailChannel
     /**
      * Create a new mail channel instance.
      *
-     * @param  \Illuminate\Contracts\Mail\Mailer  $mailer
-     * @param  \Illuminate\Mail\Markdown  $markdown
+     * @param  \Illuminate\Contracts\Mail\Mailer $mailer
+     * @param  \Illuminate\Mail\Markdown $markdown
      * @return void
      */
     public function __construct(Mailer $mailer, Markdown $markdown)
@@ -41,16 +41,16 @@ class MailChannel
     /**
      * Send the given notification.
      *
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
+     * @param  mixed $notifiable
+     * @param  \Illuminate\Notifications\Notification $notification
      * @return void
      */
     public function send($notifiable, Notification $notification)
     {
         $message = $notification->toMail($notifiable);
 
-        if (! $notifiable->routeNotificationFor('mail', $notification) &&
-            ! $message instanceof Mailable) {
+        if (!$notifiable->routeNotificationFor('mail', $notification) &&
+            !$message instanceof Mailable) {
             return;
         }
 
@@ -66,24 +66,9 @@ class MailChannel
     }
 
     /**
-     * Get the mailer Closure for the message.
-     *
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
-     * @return \Closure
-     */
-    protected function messageBuilder($notifiable, $notification, $message)
-    {
-        return function ($mailMessage) use ($notifiable, $notification, $message) {
-            $this->buildMessage($mailMessage, $notifiable, $notification, $message);
-        };
-    }
-
-    /**
      * Build the notification's view.
      *
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return string|array
      */
     protected function buildView($message)
@@ -99,12 +84,27 @@ class MailChannel
     }
 
     /**
+     * Get the mailer Closure for the message.
+     *
+     * @param  mixed $notifiable
+     * @param  \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
+     * @return \Closure
+     */
+    protected function messageBuilder($notifiable, $notification, $message)
+    {
+        return function ($mailMessage) use ($notifiable, $notification, $message) {
+            $this->buildMessage($mailMessage, $notifiable, $notification, $message);
+        };
+    }
+
+    /**
      * Build the mail message.
      *
-     * @param  \Illuminate\Mail\Message  $mailMessage
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  \Illuminate\Mail\Message $mailMessage
+     * @param  mixed $notifiable
+     * @param  \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return void
      */
     protected function buildMessage($mailMessage, $notifiable, $notification, $message)
@@ -117,7 +117,7 @@ class MailChannel
 
         $this->addAttachments($mailMessage, $message);
 
-        if (! is_null($message->priority)) {
+        if (!is_null($message->priority)) {
             $mailMessage->setPriority($message->priority);
         }
     }
@@ -125,10 +125,10 @@ class MailChannel
     /**
      * Address the mail message.
      *
-     * @param  \Illuminate\Mail\Message  $mailMessage
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  \Illuminate\Mail\Message $mailMessage
+     * @param  mixed $notifiable
+     * @param  \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return void
      */
     protected function addressMessage($mailMessage, $notifiable, $notification, $message)
@@ -149,17 +149,17 @@ class MailChannel
     /**
      * Add the "from" and "reply to" addresses to the message.
      *
-     * @param  \Illuminate\Mail\Message  $mailMessage
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  \Illuminate\Mail\Message $mailMessage
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return void
      */
     protected function addSender($mailMessage, $message)
     {
-        if (! empty($message->from)) {
+        if (!empty($message->from)) {
             $mailMessage->from($message->from[0], Arr::get($message->from, 1));
         }
 
-        if (! empty($message->replyTo)) {
+        if (!empty($message->replyTo)) {
             $mailMessage->replyTo($message->replyTo[0], Arr::get($message->replyTo, 1));
         }
     }
@@ -167,9 +167,9 @@ class MailChannel
     /**
      * Get the recipients of the given message.
      *
-     * @param  mixed  $notifiable
-     * @param  \Illuminate\Notifications\Notification  $notification
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  mixed $notifiable
+     * @param  \Illuminate\Notifications\Notification $notification
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return mixed
      */
     protected function getRecipients($notifiable, $notification, $message)
@@ -186,8 +186,8 @@ class MailChannel
     /**
      * Add the attachments to the message.
      *
-     * @param  \Illuminate\Mail\Message  $mailMessage
-     * @param  \Illuminate\Notifications\Messages\MailMessage  $message
+     * @param  \Illuminate\Mail\Message $mailMessage
+     * @param  \Illuminate\Notifications\Messages\MailMessage $message
      * @return void
      */
     protected function addAttachments($mailMessage, $message)

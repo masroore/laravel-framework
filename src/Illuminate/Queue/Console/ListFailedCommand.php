@@ -2,8 +2,8 @@
 
 namespace Illuminate\Queue\Console;
 
-use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class ListFailedCommand extends Command
 {
@@ -52,14 +52,14 @@ class ListFailedCommand extends Command
         $failed = $this->laravel['queue.failer']->all();
 
         return collect($failed)->map(function ($failed) {
-            return $this->parseFailedJob((array) $failed);
+            return $this->parseFailedJob((array)$failed);
         })->filter()->all();
     }
 
     /**
      * Parse the failed job row.
      *
-     * @param  array  $failed
+     * @param  array $failed
      * @return array
      */
     protected function parseFailedJob(array $failed)
@@ -74,15 +74,15 @@ class ListFailedCommand extends Command
     /**
      * Extract the failed job name from payload.
      *
-     * @param  string  $payload
+     * @param  string $payload
      * @return string|null
      */
     private function extractJobName($payload)
     {
         $payload = json_decode($payload, true);
 
-        if ($payload && (! isset($payload['data']['command']))) {
-            return $payload['job'];
+        if ($payload && (!isset($payload['data']['command']))) {
+            return array_if($payload, 'job');
         } elseif ($payload && isset($payload['data']['command'])) {
             return $this->matchJobName($payload);
         }
@@ -91,7 +91,7 @@ class ListFailedCommand extends Command
     /**
      * Match the job name from the payload.
      *
-     * @param  array  $payload
+     * @param  array $payload
      * @return string
      */
     protected function matchJobName($payload)
@@ -102,13 +102,13 @@ class ListFailedCommand extends Command
             return $matches[1];
         }
 
-        return $payload['job'];
+        return array_if($payload, 'job');
     }
 
     /**
      * Display the failed jobs in the console.
      *
-     * @param  array  $jobs
+     * @param  array $jobs
      * @return void
      */
     protected function displayFailedJobs(array $jobs)

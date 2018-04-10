@@ -45,9 +45,9 @@ class PackageManifest
     /**
      * Create a new package manifest instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @param  string  $basePath
-     * @param  string  $manifestPath
+     * @param  \Illuminate\Filesystem\Filesystem $files
+     * @param  string $basePath
+     * @param  string $manifestPath
      * @return void
      */
     public function __construct(Filesystem $files, $basePath, $manifestPath)
@@ -55,7 +55,7 @@ class PackageManifest
         $this->files = $files;
         $this->basePath = $basePath;
         $this->manifestPath = $manifestPath;
-        $this->vendorPath = $basePath.'/vendor';
+        $this->vendorPath = $basePath . '/vendor';
     }
 
     /**
@@ -66,19 +66,7 @@ class PackageManifest
     public function providers()
     {
         return collect($this->getManifest())->flatMap(function ($configuration) {
-            return (array) (isset($configuration['providers']) ? $configuration['providers'] : []);
-        })->filter()->all();
-    }
-
-    /**
-     * Get all of the aliases for all packages.
-     *
-     * @return array
-     */
-    public function aliases()
-    {
-        return collect($this->getManifest())->flatMap(function ($configuration) {
-            return (array) (isset($configuration['aliases']) ? $configuration['aliases'] : []);
+            return (array)(array_if($configuration, 'providers', []));
         })->filter()->all();
     }
 
@@ -89,11 +77,11 @@ class PackageManifest
      */
     protected function getManifest()
     {
-        if (! is_null($this->manifest)) {
+        if (!is_null($this->manifest)) {
             return $this->manifest;
         }
 
-        if (! file_exists($this->manifestPath)) {
+        if (!file_exists($this->manifestPath)) {
             $this->build();
         }
 
@@ -110,7 +98,7 @@ class PackageManifest
     {
         $packages = [];
 
-        if ($this->files->exists($path = $this->vendorPath.'/composer/installed.json')) {
+        if ($this->files->exists($path = $this->vendorPath . '/composer/installed.json')) {
             $packages = json_decode($this->files->get($path), true);
         }
 
@@ -119,21 +107,10 @@ class PackageManifest
         $this->write(collect($packages)->mapWithKeys(function ($package) {
             return [$this->format($package['name']) => isset($package['extra']['laravel']) ? $package['extra']['laravel'] : []];
         })->each(function ($configuration) use (&$ignore) {
-            $ignore = array_merge($ignore, isset($configuration['dont-discover']) ? $configuration['dont-discover'] : []);
+            $ignore = array_merge($ignore, array_if($configuration, 'dont-discover', []));
         })->reject(function ($configuration, $package) use ($ignore, $ignoreAll) {
             return $ignoreAll || in_array($package, $ignore);
         })->filter()->all());
-    }
-
-    /**
-     * Format the given package name.
-     *
-     * @param  string  $package
-     * @return string
-     */
-    protected function format($package)
-    {
-        return str_replace($this->vendorPath.'/', '', $package);
     }
 
     /**
@@ -143,30 +120,52 @@ class PackageManifest
      */
     protected function packagesToIgnore()
     {
-        if (! file_exists($this->basePath.'/composer.json')) {
+        if (!file_exists($this->basePath . '/composer.json')) {
             return [];
         }
-        $data = json_decode(file_get_contents(
-            $this->basePath . '/composer.json'
-        ), true);
-        return isset($data['extra']['laravel']['dont-discover']) ? $data['extra']['laravel']['dont-discover'] : [];
+
+        $tmp = json_decode(file_get_contents($this->basePath . '/composer.json'), true);
+        return isset($tmp['extra']['laravel']['dont-discover']) ? $tmp['extra']['laravel']['dont-discover'] : [];
     }
 
     /**
      * Write the given manifest array to disk.
      *
-     * @param  array  $manifest
+     * @param  array $manifest
      * @return void
      * @throws \Exception
      */
     protected function write(array $manifest)
     {
-        if (! is_writable(dirname($this->manifestPath))) {
-            throw new Exception('The '.dirname($this->manifestPath).' directory must be present and writable.');
+        if (!is_writable(dirname($this->manifestPath))) {
+            throw new Exception('The ' . dirname($this->manifestPath) . ' directory must be present and writable.');
         }
 
         $this->files->put(
-            $this->manifestPath, '<?php return '.var_export($manifest, true).';'
+            $this->manifestPath, '<?php return ' . var_export($manifest, true) . ';'
         );
+    }
+
+    /**
+     * Format the given package name.
+     *
+     * @param  string $package
+     * @return string
+     */
+    protected function format($package)
+    {
+        return str_replace($this->vendorPath . '/', '', $package);
+    }
+
+    /**
+     * Get all of the aliases for all packages.
+     *
+     * @return array
+     */
+    public function aliases()
+    {
+        return collect($this->getManifest())->flatMap(function ($configuration) {
+            return (array)(array_if($configuration, 'aliases', []));
+        })->filter()->all();
     }
 }

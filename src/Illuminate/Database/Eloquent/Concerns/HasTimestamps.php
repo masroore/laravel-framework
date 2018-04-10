@@ -20,7 +20,7 @@ trait HasTimestamps
      */
     public function touch()
     {
-        if (! $this->usesTimestamps()) {
+        if (!$this->usesTimestamps()) {
             return false;
         }
 
@@ -30,28 +30,9 @@ trait HasTimestamps
     }
 
     /**
-     * Update the creation and update timestamps.
-     *
-     * @return void
-     */
-    protected function updateTimestamps()
-    {
-        $time = $this->freshTimestamp();
-
-        if (! is_null(static::UPDATED_AT) && ! $this->isDirty(static::UPDATED_AT)) {
-            $this->setUpdatedAt($time);
-        }
-
-        if (! $this->exists && ! is_null(static::CREATED_AT) &&
-            ! $this->isDirty(static::CREATED_AT)) {
-            $this->setCreatedAt($time);
-        }
-    }
-
-    /**
      * Set the value of the "created at" attribute.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return $this
      */
     public function setCreatedAt($value)
@@ -64,7 +45,7 @@ trait HasTimestamps
     /**
      * Set the value of the "updated at" attribute.
      *
-     * @param  mixed  $value
+     * @param  mixed $value
      * @return $this
      */
     public function setUpdatedAt($value)
@@ -122,5 +103,24 @@ trait HasTimestamps
     public function getUpdatedAtColumn()
     {
         return static::UPDATED_AT;
+    }
+
+    /**
+     * Update the creation and update timestamps.
+     *
+     * @return void
+     */
+    protected function updateTimestamps()
+    {
+        $time = $this->freshTimestamp();
+
+        if (!is_null(static::UPDATED_AT) && !$this->isDirty(static::UPDATED_AT)) {
+            $this->setUpdatedAt($time);
+        }
+
+        if (!$this->exists && !is_null(static::CREATED_AT) &&
+            !$this->isDirty(static::CREATED_AT)) {
+            $this->setCreatedAt($time);
+        }
     }
 }

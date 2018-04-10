@@ -12,12 +12,12 @@ class BeanstalkdConnector implements ConnectorInterface
     /**
      * Establish a queue connection.
      *
-     * @param  array  $config
+     * @param  array $config
      * @return \Illuminate\Contracts\Queue\Queue
      */
     public function connect(array $config)
     {
-        $retryAfter = isset($config['retry_after']) ? $config['retry_after'] : Pheanstalk::DEFAULT_TTR;
+        $retryAfter = array_if($config, 'retry_after', Pheanstalk::DEFAULT_TTR);
 
         return new BeanstalkdQueue($this->pheanstalk($config), $config['queue'], $retryAfter);
     }
@@ -25,16 +25,16 @@ class BeanstalkdConnector implements ConnectorInterface
     /**
      * Create a Pheanstalk instance.
      *
-     * @param  array  $config
+     * @param  array $config
      * @return \Pheanstalk\Pheanstalk
      */
     protected function pheanstalk(array $config)
     {
         return new Pheanstalk(
             $config['host'],
-            array_get($config, 'port', PheanstalkInterface::DEFAULT_PORT),
-            array_get($config, 'timeout', Connection::DEFAULT_CONNECT_TIMEOUT),
-            array_get($config, 'persistent', false)
+            array_if($config, 'port', PheanstalkInterface::DEFAULT_PORT),
+            array_if($config, 'timeout', Connection::DEFAULT_CONNECT_TIMEOUT),
+            array_if($config, 'persistent', false)
         );
     }
 }

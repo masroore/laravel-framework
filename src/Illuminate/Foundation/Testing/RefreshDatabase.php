@@ -14,8 +14,8 @@ trait RefreshDatabase
     public function refreshDatabase()
     {
         $this->usingInMemoryDatabase()
-                        ? $this->refreshInMemoryDatabase()
-                        : $this->refreshTestDatabase();
+            ? $this->refreshInMemoryDatabase()
+            : $this->refreshTestDatabase();
     }
 
     /**
@@ -25,9 +25,7 @@ trait RefreshDatabase
      */
     protected function usingInMemoryDatabase()
     {
-        return config('database.connections')[
-            config('database.default')
-        ]['database'] == ':memory:';
+        return config('database.connections')[config('database.default')]['database'] == ':memory:';
     }
 
     /**
@@ -49,7 +47,7 @@ trait RefreshDatabase
      */
     protected function refreshTestDatabase()
     {
-        if (! RefreshDatabaseState::$migrated) {
+        if (!RefreshDatabaseState::$migrated) {
             $this->artisan('migrate:fresh');
 
             $this->app[Kernel::class]->setArtisan(null);
@@ -70,14 +68,22 @@ trait RefreshDatabase
         $database = $this->app->make('db');
 
         foreach ($this->connectionsToTransact() as $name) {
-            $database->connection($name)->beginTransaction();
+            $connection = $database->connection($name);
+            $dispatcher = $connection->getEventDispatcher();
+
+            $connection->unsetEventDispatcher();
+            $connection->beginTransaction();
+            $connection->setEventDispatcher($dispatcher);
         }
 
         $this->beforeApplicationDestroyed(function () use ($database) {
             foreach ($this->connectionsToTransact() as $name) {
                 $connection = $database->connection($name);
+                $dispatcher = $connection->getEventDispatcher();
 
-                $connection->rollBack();
+                $connection->unsetEventDispatcher();
+                $connection->rollback();
+                $connection->setEventDispatcher($dispatcher);
                 $connection->disconnect();
             }
         });
@@ -91,6 +97,6 @@ trait RefreshDatabase
     protected function connectionsToTransact()
     {
         return property_exists($this, 'connectionsToTransact')
-                            ? $this->connectionsToTransact : [null];
+            ? $this->connectionsToTransact : [null];
     }
 }

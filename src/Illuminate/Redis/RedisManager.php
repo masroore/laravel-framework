@@ -2,8 +2,8 @@
 
 namespace Illuminate\Redis;
 
-use InvalidArgumentException;
 use Illuminate\Contracts\Redis\Factory;
+use InvalidArgumentException;
 
 /**
  * @mixin \Illuminate\Redis\Connections\Connection
@@ -34,8 +34,8 @@ class RedisManager implements Factory
     /**
      * Create a new Redis manager instance.
      *
-     * @param  string  $driver
-     * @param  array  $config
+     * @param  string $driver
+     * @param  array $config
      * @return void
      */
     public function __construct($driver, array $config)
@@ -45,9 +45,31 @@ class RedisManager implements Factory
     }
 
     /**
+     * Return all of the created connections.
+     *
+     * @return array
+     */
+    public function connections()
+    {
+        return $this->connections;
+    }
+
+    /**
+     * Pass methods onto the default Redis connection.
+     *
+     * @param  string $method
+     * @param  array $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return $this->connection()->{$method}(...$parameters);
+    }
+
+    /**
      * Get a Redis connection by name.
      *
-     * @param  string|null  $name
+     * @param  string|null $name
      * @return \Illuminate\Redis\Connections\Connection
      */
     public function connection($name = null)
@@ -64,7 +86,7 @@ class RedisManager implements Factory
     /**
      * Resolve the given connection by name.
      *
-     * @param  string|null  $name
+     * @param  string|null $name
      * @return \Illuminate\Redis\Connections\Connection
      *
      * @throws \InvalidArgumentException
@@ -73,7 +95,7 @@ class RedisManager implements Factory
     {
         $name = $name ?: 'default';
 
-        $options = isset($this->config['options']) ? $this->config['options'] : [];
+        $options = array_if($this->config, 'options', []);
 
         if (isset($this->config[$name])) {
             return $this->connector()->connect($this->config[$name], $options);
@@ -84,21 +106,6 @@ class RedisManager implements Factory
         }
 
         throw new InvalidArgumentException("Redis connection [{$name}] not configured.");
-    }
-
-    /**
-     * Resolve the given cluster connection by name.
-     *
-     * @param  string  $name
-     * @return \Illuminate\Redis\Connections\Connection
-     */
-    protected function resolveCluster($name)
-    {
-        $clusterOptions = isset($this->config['clusters']['options']) ? $this->config['clusters']['options'] : [];
-
-        return $this->connector()->connectToCluster(
-            $this->config['clusters'][$name], $clusterOptions, isset($this->config['options']) ? $this->config['options'] : []
-        );
     }
 
     /**
@@ -117,24 +124,17 @@ class RedisManager implements Factory
     }
 
     /**
-     * Return all of the created connections.
+     * Resolve the given cluster connection by name.
      *
-     * @return array
+     * @param  string $name
+     * @return \Illuminate\Redis\Connections\Connection
      */
-    public function connections()
+    protected function resolveCluster($name)
     {
-        return $this->connections;
-    }
+        $clusterOptions = isset($this->config['clusters']['options']) ? $this->config['clusters']['options'] : [];
 
-    /**
-     * Pass methods onto the default Redis connection.
-     *
-     * @param  string  $method
-     * @param  array  $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return $this->connection()->{$method}(...$parameters);
+        return $this->connector()->connectToCluster(
+            $this->config['clusters'][$name], $clusterOptions, array_if($this->config, 'options', [])
+        );
     }
 }

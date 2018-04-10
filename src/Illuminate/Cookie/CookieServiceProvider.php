@@ -17,7 +17,7 @@ class CookieServiceProvider extends ServiceProvider
             $config = $app->make('config')->get('session');
 
             return (new CookieJar)->setDefaultPathAndDomain(
-                $config['path'], $config['domain'], $config['secure'], $config['same_site']
+                $config['path'], $config['domain'], $config['secure'], array_if($config, 'same_site')
             );
         });
     }
