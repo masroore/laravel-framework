@@ -352,6 +352,16 @@ class UrlGenerator implements UrlGeneratorContract
     }
 
     /**
+     * Get stylesheet & javascript assets directory name
+     *
+     * @return string
+     */
+    public function assetDirectoryName()
+    {
+        return trim(env('ASSET_FOLDER', 'assets'), '/');
+    }
+
+    /**
      * Generate the URL to an application asset.
      *
      * @param  string $path
@@ -369,7 +379,7 @@ class UrlGenerator implements UrlGeneratorContract
         // for asset paths, but only for routes to endpoints in the application.
         $root = $this->formatRoot($this->formatScheme($secure));
 
-        return $this->removeIndex($root) . '/' . trim($path, '/');
+        return $this->removeIndex($root) . '/' . $this->assetDirectoryName() . '/' . trim($path, '/');
     }
 
     /**
