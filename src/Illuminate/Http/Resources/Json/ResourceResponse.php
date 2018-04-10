@@ -90,7 +90,8 @@ class ResourceResponse implements Responsable
      */
     protected function wrapper()
     {
-        return get_class($this->resource)::$wrap;
+        $resource = get_class($this->resource);
+        return $resource::$wrap;
     }
 
     /**
