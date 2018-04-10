@@ -3,17 +3,17 @@
 namespace Illuminate\Database;
 
 use Illuminate\Support\Str;
-use Throwable;
+use Exception;
 
 trait DetectsLostConnections
 {
     /**
      * Determine if the given exception was caused by a lost connection.
      *
-     * @param  \Throwable $e
+     * @param  \Exception $e
      * @return bool
      */
-    protected function causedByLostConnection(Throwable $e)
+    protected function causedByLostConnection(Exception $e)
     {
         $message = $e->getMessage();
 
