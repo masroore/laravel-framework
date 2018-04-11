@@ -881,6 +881,19 @@ if (!function_exists('storage_path')) {
     }
 }
 
+if (! function_exists('asset_path')) {
+    /**
+     * Get the path to the assets folder.
+     *
+     * @param  string  $path
+     * @return string
+     */
+    function asset_path($path = '')
+    {
+        return app('path.asset').($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+}
+
 if (!function_exists('today')) {
     /**
      * Create a new Carbon instance for the current date.
