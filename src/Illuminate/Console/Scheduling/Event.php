@@ -388,7 +388,7 @@ class Event
     protected function ensureOutputIsBeingCapturedForEmail()
     {
         if (is_null($this->output) || $this->output == $this->getDefaultOutput()) {
-            $this->sendOutputTo(storage_path('logs/schedule-' . sha1($this->mutexName()) . '.log'));
+            $this->sendOutputTo(storage_path('schedule-' . sha1($this->mutexName()) . '.log'));
         }
     }
 
@@ -399,7 +399,7 @@ class Event
      */
     public function mutexName()
     {
-        return 'framework' . DIRECTORY_SEPARATOR . 'schedule-' . sha1($this->expression . $this->command);
+        return /*'framework' . DIRECTORY_SEPARATOR .*/ 'schedule-' . sha1($this->expression . $this->command);
     }
 
     /**

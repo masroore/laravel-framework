@@ -23,7 +23,7 @@ class Storage extends Facade
         $disk = $disk ?: self::$app['config']->get('filesystems.default');
 
         (new Filesystem)->cleanDirectory(
-            $root = storage_path('framework/testing/disks/' . $disk)
+            $root = storage_path('_dsk_' . $disk)
         );
 
         static::set($disk, self::createLocalDriver(['root' => $root]));
@@ -40,7 +40,7 @@ class Storage extends Facade
         $disk = $disk ?: self::$app['config']->get('filesystems.default');
 
         static::set($disk, self::createLocalDriver([
-            'root' => storage_path('framework/testing/disks/' . $disk),
+            'root' => storage_path('_dsk_' . $disk),
         ]));
     }
 

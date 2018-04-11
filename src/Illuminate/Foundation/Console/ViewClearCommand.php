@@ -55,7 +55,7 @@ class ViewClearCommand extends Command
             throw new RuntimeException('View path not found.');
         }
 
-        foreach ($this->files->glob("{$path}/*") as $view) {
+        foreach ($this->files->glob("{$path}/_vw_*") as $view) {
             $this->files->delete($view);
         }
 
