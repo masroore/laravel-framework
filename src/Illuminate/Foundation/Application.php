@@ -109,6 +109,13 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     protected $storagePath;
 
     /**
+     * The custom assets path defined by the developer.
+     *
+     * @var string
+     */
+    protected $assetPath;
+
+    /**
      * The custom environment path defined by the developer.
      *
      * @var string
@@ -176,6 +183,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
         $this->instance('path.config', $this->configPath());
         $this->instance('path.public', $this->publicPath());
         $this->instance('path.storage', $this->storagePath());
+        $this->instance('path.asset', $this->assetPath());
         $this->instance('path.database', $this->databasePath());
         $this->instance('path.resources', $this->resourcePath());
         $this->instance('path.bootstrap', $this->bootstrapPath());
@@ -253,6 +261,16 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     public function storagePath()
     {
         return $this->storagePath ?: $this->basePath . DIRECTORY_SEPARATOR . 'storage';
+    }
+
+    /**
+     * Get the path to the assets directory.
+     *
+     * @return string
+     */
+    public function assetPath()
+    {
+        return $this->assetPath ?: $this->basePath . DIRECTORY_SEPARATOR . 'assets';
     }
 
     /**
@@ -649,6 +667,21 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
         $this->databasePath = $path;
 
         $this->instance('path.database', $path);
+
+        return $this;
+    }
+
+    /**
+     * Set the asset directory.
+     *
+     * @param  string $path
+     * @return $this
+     */
+    public function useAssetPath($path)
+    {
+        $this->assetPath = $path;
+
+        $this->instance('path.asset', $path);
 
         return $this;
     }
