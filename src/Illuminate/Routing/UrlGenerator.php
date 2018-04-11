@@ -378,8 +378,9 @@ class UrlGenerator implements UrlGeneratorContract
         // file in the paths. If it does, we will remove it since it is not needed
         // for asset paths, but only for routes to endpoints in the application.
         $root = $this->formatRoot($this->formatScheme($secure));
-
-        return $this->removeIndex($root) . '/' . $this->assetDirectoryName() . '/' . trim($path, '/');
+        $assetFolder = $this->assetDirectoryName();
+        $assetFolder = blank($assetFolder) ? '/' : '/' . $assetFolder . '/';
+        return $this->removeIndex($root) . $assetFolder . trim($path, '/');
     }
 
     /**
