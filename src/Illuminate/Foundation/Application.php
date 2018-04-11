@@ -109,6 +109,13 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     protected $storagePath;
 
     /**
+     * The custom uploads path defined by the developer.
+     *
+     * @var string
+     */
+    protected $uploadPath;
+
+    /**
      * The custom assets path defined by the developer.
      *
      * @var string
@@ -183,6 +190,7 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
         $this->instance('path.config', $this->configPath());
         $this->instance('path.public', $this->publicPath());
         $this->instance('path.storage', $this->storagePath());
+        $this->instance('path.upload', $this->uploadPath());
         $this->instance('path.asset', $this->assetPath());
         $this->instance('path.database', $this->databasePath());
         $this->instance('path.resources', $this->resourcePath());
@@ -261,6 +269,16 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
     public function storagePath()
     {
         return $this->storagePath ?: $this->basePath . DIRECTORY_SEPARATOR . 'storage';
+    }
+
+    /**
+     * Get the path to the uploads directory.
+     *
+     * @return string
+     */
+    public function uploadPath()
+    {
+        return $this->uploadPath ?: $this->basePath . DIRECTORY_SEPARATOR . 'uploads';
     }
 
     /**
@@ -697,6 +715,21 @@ class Application extends Container implements ApplicationContract, HttpKernelIn
         $this->storagePath = $path;
 
         $this->instance('path.storage', $path);
+
+        return $this;
+    }
+
+    /**
+     * Set the uploads directory.
+     *
+     * @param  string $path
+     * @return $this
+     */
+    public function useUploadPath($path)
+    {
+        $this->uploadPath = $path;
+
+        $this->instance('path.upload', $path);
 
         return $this;
     }
