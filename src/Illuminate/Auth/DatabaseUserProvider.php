@@ -123,7 +123,13 @@ class DatabaseUserProvider implements UserProvider
         $query = $this->conn->table($this->table);
 
         foreach ($credentials as $key => $value) {
-            if (!Str::contains($key, 'password')) {
+            if (Str::contains($key, 'password')) {
+                continue;
+            }
+
+            if (is_array($value) || $value instanceof Arrayable) {
+                $query->whereIn($key, $value);
+            } else {
                 $query->where($key, $value);
             }
         }
